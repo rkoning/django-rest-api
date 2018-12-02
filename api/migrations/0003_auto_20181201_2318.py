@@ -11,9 +11,9 @@ def to_integer(string):
 def from_json(apps, schema_editor):
     with open('npt_adwords.json') as json_file:
         json_data = json.load(json_file)
-        Account = apps.get_model('dashboard', 'Account')
-        Campaign = apps.get_model('dashboard', 'Campaign')
-        Advertisement = apps.get_model('dashboard', 'Advertisement')
+        Account = apps.get_model('api', 'Account')
+        Campaign = apps.get_model('api', 'Campaign')
+        Advertisement = apps.get_model('api', 'Advertisement')
         for record in json_data:
             try:
                 account = Account.objects.get(ext_account_id = int(record["ExternalCustomerId"]))

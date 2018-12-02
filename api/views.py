@@ -9,18 +9,6 @@ from .serializers import AccountSerializer, CampaignSerializer, AdvertisementSer
 
 # Create your views here.
 
-def index(request):
-    clicks_over_time = Campaign.objects.all()[0].get_sum_by_time()
-    context = {'clicks_over_time' : clicks_over_time.items() }
-    return render(request, 'dashboard/index.html', context)
-#
-# def detail(request, advertisement_id):
-#     return HttpResponse("You're looking at: %s" % advertisement_id)
-#
-# def results(request, advertisement_id):
-#     response = "You're looking at the results of %s."
-#     return HttpResponse(response % advertisement_id)
-
 @api_view(['GET'])
 def account_collection(request):
     if request.method == 'GET':

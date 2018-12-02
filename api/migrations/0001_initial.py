@@ -51,12 +51,12 @@ class Migration(migrations.Migration):
                 ('campaign_id', models.BigIntegerField(primary_key=True, serialize=False)),
                 ('campaign_name', models.CharField(max_length=256)),
                 ('campaign_status', models.CharField(max_length=256)),
-                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dashboard.Account')),
+                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.Account')),
             ],
         ),
         migrations.AddField(
             model_name='advertisement',
             name='campaign',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dashboard.Campaign'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.Campaign'),
         ),
     ]
