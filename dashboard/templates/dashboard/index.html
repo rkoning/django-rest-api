@@ -1,9 +1,0 @@
-{% if recent_ads %}
-  <ul>
-  {% for ad in recent_ads %}
-    <li><a href="/dashboard/{{ ad.id }}">{{ ad }}</a></li>
-  {% endfor %}
-  </ul>
-{% else %}
-  <p>No Ads availible.</p>
-{% endif %}

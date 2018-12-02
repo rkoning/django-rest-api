@@ -1,17 +1,17 @@
 from django.shortcuts import render
 import requests
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Advertisement, Account, Campaign
 from .serializers import AccountSerializer, CampaignSerializer, AdvertisementSerializer
+
 # Create your views here.
 
 def index(request):
-    recent_ads = Advertisement.objects.order_by('-date')
-    context = { 'recent_ads' : recent_ads }
-    output = ', '.join([str(ad) for ad in recent_ads])
+    clicks_over_time = Campaign.objects.all()[0].get_sum_by_time()
+    context = {'clicks_over_time' : clicks_over_time.items() }
     return render(request, 'dashboard/index.html', context)
 #
 # def detail(request, advertisement_id):
@@ -42,7 +42,9 @@ def account_element(request, pk):
 @api_view(['GET'])
 def campaign_collection(request):
     if request.method == 'GET':
-        campaigns = Campaign.objects.all()
+        limit = int(request.GET.get('limit', 100))
+        offset = int(request.GET.get('offset', 0))
+        campaigns = Campaign.objects.all()[offset:limit]
         serializer = CampaignSerializer(campaigns, many = True)
         return Response(serializer.data)
 

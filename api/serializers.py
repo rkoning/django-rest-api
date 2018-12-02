@@ -6,16 +6,14 @@ import datetime
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ('uuid', 'ext_account_id', 'account_descriptive_name', 'customer_descriptive_name')
+        fields = ('id', 'uuid', 'ext_account_id', 'account_descriptive_name', 'customer_descriptive_name')
 
 class CampaignSerializer(serializers.ModelSerializer):
-    account = serializers.ReadOnlyField(source='account.uuid')
     class Meta:
         model = Campaign
-        fields = ('uuid', 'ext_campaign_id', 'campaign_name', 'campaign_status', 'account')
+        fields = ('id', 'uuid', 'ext_campaign_id', 'campaign_name', 'campaign_status', 'account')
 
 class AdvertisementSerializer(serializers.ModelSerializer):
-    campaign = serializers.ReadOnlyField(source='campaign.uuid')
     class Meta:
         model = Advertisement
         fields = (
@@ -42,7 +40,8 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         )
 
     def handle_params(request, ad_set):
-        limit = int(request.GET.get('limit', 10))
+        limit = int(request.GET.get('limit', 100))
+        offset = int(request.GET.get('offset', 0))
         start = request.GET.get('start_date','1000-1-1')
         end = request.GET.get('end_date', now())
         order_by = request.GET.get('order_by', 'date')
@@ -50,7 +49,7 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         order = '-' if order == 'desc' else ''
         print(start)
         print(end)
-        ads = ad_set.filter(date__range=[start, end]).order_by("%s%s" % ( order, order_by))[:limit]
+        ads = ad_set.filter(date__range=[start, end]).order_by("%s%s" % ( order, order_by))[offset:limit]
         print(ads)
         serializer = AdvertisementSerializer(ads, many = True)
         return serializer.data

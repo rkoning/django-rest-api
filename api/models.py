@@ -1,7 +1,8 @@
 from django.db import models
+from django.db.models import Avg
 import uuid
 from django.contrib.postgres.fields import ArrayField
-
+from collections import defaultdict
 # Create your models here.
 
 class Account(models.Model):
@@ -18,6 +19,15 @@ class Campaign(models.Model):
     campaign_name = models.CharField(max_length = 256)
     campaign_status = models.CharField(max_length = 256)
     account = models.ForeignKey(Account, on_delete = models.CASCADE)
+
+    def get_average_of_advertisements(attr):
+        return self.advertisement_set.aggregate(Avg(attr)).values()[0]
+
+    def get_sum_by_time(self):
+        sums = defaultdict(int)
+        for o in self.advertisement_set.order_by('date'):
+            sums[o.date] += o.clicks
+        return sums
 
 class Advertisement(models.Model):
     id = models.AutoField(primary_key=True)

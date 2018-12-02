@@ -57,7 +57,7 @@ def from_json(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dashboard', '0002_auto_20181201_2316'),
+        ('api', '0002_auto_20181201_2316'),
     ]
 
     operations = [
