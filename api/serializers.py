@@ -47,9 +47,5 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         order_by = request.GET.get('order_by', 'date')
         order = request.GET.get('order', 'desc')
         order = '-' if order == 'desc' else ''
-        print(start)
-        print(end)
         ads = ad_set.filter(date__range=[start, end]).order_by("%s%s" % ( order, order_by))[offset:limit]
-        print(ads)
-        serializer = AdvertisementSerializer(ads, many = True)
-        return serializer.data
+        return ads

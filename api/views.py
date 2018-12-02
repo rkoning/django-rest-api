@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import requests
+from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from rest_framework.decorators import api_view
@@ -33,8 +34,9 @@ def campaign_collection(request):
         limit = int(request.GET.get('limit', 100))
         offset = int(request.GET.get('offset', 0))
         campaigns = Campaign.objects.all()[offset:limit]
-        serializer = CampaignSerializer(campaigns, many = True)
-        return JsonResponse(serializer.data)
+        # serializer = CampaignSerializer(campaigns, many = True)
+        response = serializers.serialize("json", campaigns)
+        return HttpResponse(response, content_type = "application/json")
 
 @api_view(['GET'])
 def campaign_element(request, pk):
@@ -45,13 +47,14 @@ def campaign_element(request, pk):
 
     if request.method == 'GET':
         serializer = CampaignSerializer(campaign)
-        return JsonResponse(serializer.data)
+        return Response(serializer.data)
 
 @api_view(['GET'])
 def campaign_advertisements(request, pk):
     try:
         campaign = Campaign.objects.get(pk = pk)
-        return JsonResponse(AdvertisementSerializer.handle_params(request, campaign.advertisement_set))
+        response = serializers.serialize("json", AdvertisementSerializer.handle_params(request, campaign.advertisement_set))
+        return HttpResponse(response, content_type = "application/json")
     except Campaign.DoesNotExist:
         return HttpResponse(status=404)
 
