@@ -34,7 +34,7 @@ def campaign_collection(request):
         offset = int(request.GET.get('offset', 0))
         campaigns = Campaign.objects.all()[offset:limit]
         serializer = CampaignSerializer(campaigns, many = True)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data)
 
 @api_view(['GET'])
 def campaign_element(request, pk):
@@ -45,13 +45,13 @@ def campaign_element(request, pk):
 
     if request.method == 'GET':
         serializer = CampaignSerializer(campaign)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data)
 
 @api_view(['GET'])
 def campaign_advertisements(request, pk):
     try:
         campaign = Campaign.objects.get(pk = pk)
-        return Response(AdvertisementSerializer.handle_params(request, campaign.advertisement_set))
+        return JsonResponse(AdvertisementSerializer.handle_params(request, campaign.advertisement_set))
     except Campaign.DoesNotExist:
         return HttpResponse(status=404)
 
