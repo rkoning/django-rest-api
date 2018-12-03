@@ -95,7 +95,7 @@ def campaign_advertisements(request, pk):
 @api_view(['GET', 'POST'])
 def advertisement_collection(request):
     if request.method == 'GET':
-        response = serializers.serialize("json", AdvertisementSerializer.handle_params(request, Advertisement.objects.all()))
+        response = serializers.serialize("json", Advertisement.handle_params(request, Advertisement.objects.all()))
         return HttpResponse(response, content_type = "application/json")
     if request.method == 'POST':
         serializer = AdvertisementSerializer(data = request.data)
