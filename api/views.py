@@ -48,8 +48,8 @@ def account_element(request, pk):
     except Account.DoesNotExist:
         return HttpResponse(status = 404)
 
+    serializer = AccountSerializer(account)
     if request.method == 'GET':
-        serializer = AccountSerializer(account)
         return Response(serializer.data)
     elif request.method == 'PUT':
         serializer = AccountSerializer(account, data=request.data)
@@ -94,8 +94,6 @@ def campaign_collection(request):
         campaigns = Campaign.objects.all()[offset:offset + limit]
         serializer = CampaignSerializer(campaigns, many = True)
         return Response(serializer.data)
-        # response = serializers.serialize("json", campaigns)
-        # return JsonResponse(response, content_type = "application/json")
     elif request.method == 'POST':
         serializer = CampaignSerializer(data = request.data)
         if serializer.is_valid():
@@ -118,8 +116,8 @@ def campaign_element(request, pk):
     except Campaign.DoesNotExist:
         return HttpResponse(status=404)
 
+    serializer = CampaignSerializer(campaign)
     if request.method == 'GET':
-        serializer = CampaignSerializer(campaign)
         return Response(serializer.data)
     elif request.method == 'PUT':
         serializer = CampaignSerializer(campaign, data=request.data)
@@ -179,7 +177,6 @@ def advertisement_element(request, pk):
     except Advertisement.DoesNotExist:
         return HttpResponse(status=404)
 
-    print(request.method)
     serializer = AdvertisementSerializer(ad)
     if request.method == 'GET':
         return Response(serializer.data)

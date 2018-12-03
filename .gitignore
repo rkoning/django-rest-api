@@ -2,3 +2,4 @@ venv
 *.pyc
 .env
 tomis-project/*
+npt_adwords.json
