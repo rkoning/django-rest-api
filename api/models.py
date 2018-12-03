@@ -59,6 +59,10 @@ class Advertisement(models.Model):
     video_views = models.IntegerField(default = 0)
 
     def handle_params(request, ad_set):
+        """
+        Checks the query of a request and returns a subset of the Queryset of advertisements
+        based on the contents of the request
+        """
         limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))
         start = request.GET.get('start_date','1000-1-1')
@@ -69,7 +73,8 @@ class Advertisement(models.Model):
         ads = ad_set.filter(date__range=[start, end]).order_by("%s%s" % ( order, order_by ) )[offset:limit]
         return ads
 
-    def handle_params_with_method(request, ad_set, method):
+
+    def handle_summary_params(request, ad_set):
         limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))
         start = request.GET.get('start_date','1000-1-1')
@@ -77,11 +82,12 @@ class Advertisement(models.Model):
         order_by = request.GET.get('order_by', 'clicks')
         order = request.GET.get('order', 'asc')
         order = '-' if order == 'desc' else ''
-        xy = request.GET.get('filter', 'date, clicks')
-        xy = xy.split(',')
-        x = xy[0].strip()
-        y = xy[1].strip()
-        print(xy)
+        x = request.GET.get('x', 'date')
+        y = request.GET.get('y', 'clicks')
+        method = request.GET.get('method', 'Sum')
         ads = ad_set.filter(date__range=[start, end]).order_by("%s%s" % ( order, order_by ) )
-        ads = list(ads.values(x).annotate(Sum(y)))
+        if method == 'Sum':
+            ads = list(ads.values(x).annotate(Sum(y)))
+        else:
+            ads = list(ads.values(x).annotate(Avg(y)))
         return ads
