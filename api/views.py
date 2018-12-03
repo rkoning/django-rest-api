@@ -1,16 +1,19 @@
-from django.shortcuts import render
 import requests
+
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
-from django.template import loader
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+
 from .models import Advertisement, Account, Campaign
 from .serializers import AccountSerializer, CampaignSerializer, AdvertisementSerializer
+from oauth2_provider.decorators import protected_resource
 
-# Create your views here.
-
+@protected_resource()
 @api_view(['GET', 'POST'])
 def account_collection(request):
     if request.method == 'GET':
@@ -25,7 +28,8 @@ def account_collection(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+@protected_resource()
+@api_view(['GET', 'PUT', 'DELETE'])
 def account_element(request, pk):
     try:
         account = Account.objects.get(pk = pk)
@@ -35,7 +39,17 @@ def account_element(request, pk):
     if request.method == 'GET':
         serializer = AccountSerializer(account)
         return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = AccountSerializer(account, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+    elif request.method == 'DELETE':
+        account.delete()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@protected_resource()
 @api_view(['GET'])
 def account_campaigns(request, pk):
     if request.method == 'GET':
@@ -47,6 +61,7 @@ def account_campaigns(request, pk):
             return HttpResponse(status = 404)
 
 
+@protected_resource()
 @api_view(['GET', 'POST'])
 def campaign_collection(request):
     if request.method == 'GET':
@@ -64,7 +79,8 @@ def campaign_collection(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET'])
+@protected_resource()
+@api_view(['GET', 'PUT', 'DELETE'])
 def campaign_element(request, pk):
     try:
         campaign = Campaign.objects.get(pk = pk)
@@ -74,7 +90,17 @@ def campaign_element(request, pk):
     if request.method == 'GET':
         serializer = CampaignSerializer(campaign)
         return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = CampaignSerializer(campaign, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+    elif request.method == 'DELETE':
+        campaign.delete()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@protected_resource()
 @api_view(['GET'])
 def campaign_advertisements(request, pk):
     if request.method == 'GET':
@@ -91,8 +117,8 @@ def campaign_advertisements(request, pk):
         except Campaign.DoesNotExist:
             return HttpResponse(status = 404)
 
-
 @api_view(['GET', 'POST'])
+@protected_resource()
 def advertisement_collection(request):
     if request.method == 'GET':
         response = serializers.serialize("json", Advertisement.handle_params(request, Advertisement.objects.all()))
@@ -105,6 +131,7 @@ def advertisement_collection(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'DELETE', 'PUT'])
+@protected_resource()
 def advertisement_element(request, pk):
     try:
         ad = Advertisement.objects.get(pk = pk)

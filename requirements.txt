@@ -3,3 +3,4 @@ gunicorn
 django-heroku
 requests
 djangorestframework
+django_oauth2_provider

@@ -15,9 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls import url
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('api/', include('api.urls')),
-    path('dashboard/', include('dashboard.urls')),
     path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/login/', auth_views.LoginView.as_view(template_name='registration/login.html')),
+    url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]
