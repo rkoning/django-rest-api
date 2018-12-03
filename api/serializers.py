@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Account, Campaign, Advertisement
-from django.utils.timezone import now
 import datetime
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -40,12 +39,16 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         )
 
     def handle_params(request, ad_set):
-        limit = int(request.GET.get('limit', 100))
+        limit = int(request.GET.get('limit', 10))
         offset = int(request.GET.get('offset', 0))
         start = request.GET.get('start_date','1000-1-1')
         end = request.GET.get('end_date', now())
-        order_by = request.GET.get('order_by', 'date')
-        order = request.GET.get('order', 'desc')
+        order_by = request.GET.get('order_by', 'clicks')
+        order = request.GET.get('order', 'asc')
         order = '-' if order == 'desc' else ''
-        ads = ad_set.filter(date__range=[start, end]).order_by("%s%s" % ( order, order_by))[offset:limit]
+        ads = ad_set.filter(date__range=[start, end]).order_by("%s%s" % ( order, order_by ) )[offset:limit]
+        # ads = list(ads.values("clicks").annotate(Avg("impressions")))
+        # print(ads)
+        # if filter:
+        #     ads = ads.values('cost')
         return ads

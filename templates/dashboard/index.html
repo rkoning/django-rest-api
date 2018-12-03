@@ -1,0 +1,60 @@
+<head>
+  {% load static %}
+  <script src="{% static 'js/d3.js' %}"></script>
+  <script src="{% static 'js/jquery-3.3.1.min.js' %}" charset="utf-8"></script>
+  <script src="{% static 'js/dashboard.js' %}"></script>
+</head>
+
+<h2>{{account.customer_descriptive_name}}</h2>
+
+<table>
+  <tr>
+    <th><h5>Campaign</h5></th>
+    <th><h5>X</h5></th>
+    <th><h5>Y</h5></th>
+    <th><h5>Method</h5></th>
+    <th><h5>Order</h5><th>
+  </tr>
+  <tr>
+    <td>
+      <select id="campaign_id">
+        {% for c in account_campaigns %}
+          <option value="{{c.id}}">{{c.campaign_name}}</option>
+        {% endfor %}
+      </select>
+    </td>
+    <td>
+      <select id="x_axis_field">
+        {% include '_options.html' %}
+        <option value="date">Date</option>
+        <option value="city_criteria_id">City Criteria Id</option>
+        <option value="country_criteria_id">Country Criteria Id</option>
+        <option value="most_specific_criteria_id">Most Specific Criteria Id</option>
+        <option value="metro_criteria_id">Metro Criteria Id</option>
+        <option value="region_criteria_id">Region Criteria Id</option>
+      </select>
+    </td>
+    <td>
+      <select id="y_axis_field">
+        {% include '_options.html' %}
+      </select>
+    </td>
+    <td>
+      <select id="summary_method">
+        <option value="average">Average</option>
+        <option value="sum">Sum</option>
+      </select>
+    </td>
+    <td>
+      <select id="order">
+        <option value="avg">Ascending</option>
+        <option value="sum">Descending</option>
+      </select>
+    </td>
+    <td>
+      <a onclick="getGraph()">Plot!</a>
+    </td>
+  </tr>
+</table>
+
+<div id="chart"></div>

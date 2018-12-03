@@ -1,5 +1,6 @@
 from django.db import models
-from django.db.models import Avg
+from django.db.models import Sum, Avg
+from django.utils.timezone import now
 import uuid
 from django.contrib.postgres.fields import ArrayField
 from collections import defaultdict
@@ -57,5 +58,30 @@ class Advertisement(models.Model):
     interaction_types = ArrayField(models.CharField(max_length = 256), size = 8)
     video_views = models.IntegerField(default = 0)
 
-    def __str__(self):
-        return "%s %s %s" % (self.date, self.device, self.cost)
+    def handle_params(request, ad_set):
+        limit = int(request.GET.get('limit', 10))
+        offset = int(request.GET.get('offset', 0))
+        start = request.GET.get('start_date','1000-1-1')
+        end = request.GET.get('end_date', now())
+        order_by = request.GET.get('order_by', 'clicks')
+        order = request.GET.get('order', 'asc')
+        order = '-' if order == 'desc' else ''
+        ads = ad_set.filter(date__range=[start, end]).order_by("%s%s" % ( order, order_by ) )[offset:limit]
+        return ads
+
+    def handle_params_with_method(request, ad_set, method):
+        limit = int(request.GET.get('limit', 10))
+        offset = int(request.GET.get('offset', 0))
+        start = request.GET.get('start_date','1000-1-1')
+        end = request.GET.get('end_date', now())
+        order_by = request.GET.get('order_by', 'clicks')
+        order = request.GET.get('order', 'asc')
+        order = '-' if order == 'desc' else ''
+        xy = request.GET.get('filter', 'date, clicks')
+        xy = xy.split(',')
+        x = xy[0].strip()
+        y = xy[1].strip()
+        print(xy)
+        ads = ad_set.filter(date__range=[start, end]).order_by("%s%s" % ( order, order_by ) )
+        ads = list(ads.values(x).annotate(Sum(y)))
+        return ads
