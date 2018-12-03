@@ -5,12 +5,12 @@ import datetime
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ('id', 'uuid', 'ext_account_id', 'account_descriptive_name', 'customer_descriptive_name')
+        fields = ('id', 'ext_account_id', 'account_descriptive_name', 'customer_descriptive_name')
 
 class CampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = Campaign
-        fields = ('id', 'uuid', 'ext_campaign_id', 'campaign_name', 'campaign_status', 'account')
+        fields = ('id', 'ext_campaign_id', 'campaign_name', 'campaign_status', 'account')
 
 class AdvertisementSerializer(serializers.ModelSerializer):
     class Meta:

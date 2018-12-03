@@ -8,14 +8,12 @@ from collections import defaultdict
 
 class Account(models.Model):
     id = models.AutoField(primary_key=True)
-    uuid = models.UUIDField(default = uuid.uuid4, editable = False)
     ext_account_id = models.BigIntegerField(default = 0)
     account_descriptive_name = models.CharField(max_length = 256)
     customer_descriptive_name = models.CharField(max_length = 256)
 
 class Campaign(models.Model):
     id = models.AutoField(primary_key=True)
-    uuid = models.UUIDField(default = uuid.uuid4, editable = False)
     ext_campaign_id = models.BigIntegerField(default = 0)
     campaign_name = models.CharField(max_length = 256)
     campaign_status = models.CharField(max_length = 256)
@@ -32,7 +30,6 @@ class Campaign(models.Model):
 
 class Advertisement(models.Model):
     id = models.AutoField(primary_key=True)
-    uuid = models.UUIDField(default = uuid.uuid4, editable = False)
     # reference to the campaign that this Ad is part of
     campaign = models.ForeignKey(Campaign, on_delete = models.CASCADE)
     # These ids should be foreign keys,
