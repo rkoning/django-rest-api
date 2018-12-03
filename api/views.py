@@ -13,7 +13,6 @@ from .models import Advertisement, Account, Campaign
 from .serializers import AccountSerializer, CampaignSerializer, AdvertisementSerializer
 from oauth2_provider.decorators import protected_resource
 
-@protected_resource()
 @api_view(['GET', 'POST'])
 def account_collection(request):
     if request.method == 'GET':
@@ -27,8 +26,6 @@ def account_collection(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-@protected_resource()
 @api_view(['GET', 'PUT', 'DELETE'])
 def account_element(request, pk):
     try:
@@ -49,7 +46,6 @@ def account_element(request, pk):
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@protected_resource()
 @api_view(['GET'])
 def account_campaigns(request, pk):
     if request.method == 'GET':
@@ -60,8 +56,6 @@ def account_campaigns(request, pk):
         except Account.DoesNotExist:
             return HttpResponse(status = 404)
 
-
-@protected_resource()
 @api_view(['GET', 'POST'])
 def campaign_collection(request):
     if request.method == 'GET':
@@ -79,7 +73,6 @@ def campaign_collection(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@protected_resource()
 @api_view(['GET', 'PUT', 'DELETE'])
 def campaign_element(request, pk):
     try:
@@ -100,7 +93,6 @@ def campaign_element(request, pk):
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@protected_resource()
 @api_view(['GET'])
 def campaign_advertisements(request, pk):
     if request.method == 'GET':
@@ -108,7 +100,6 @@ def campaign_advertisements(request, pk):
             campaign = Campaign.objects.get(pk = pk)
             method = request.GET.get('method', None)
             if method is not None:
-                print(method)
                 response = Advertisement.handle_params_with_method(request, campaign.advertisement_set, method)
                 return JsonResponse(response, safe=False)
             else:
@@ -118,10 +109,9 @@ def campaign_advertisements(request, pk):
             return HttpResponse(status = 404)
 
 @api_view(['GET', 'POST'])
-@protected_resource()
 def advertisement_collection(request):
     if request.method == 'GET':
-        response = serializers.serialize("json", Advertisement.handle_params(request, Advertisement.objects.all()))
+        response = serializers.serialize("json", Advertisement.handle_params(request, Advertisement.objects.all()), fields=(request.GET.get('fields', None)))
         return HttpResponse(response, content_type = "application/json")
     if request.method == 'POST':
         serializer = AdvertisementSerializer(data = request.data)
@@ -131,7 +121,6 @@ def advertisement_collection(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'DELETE', 'PUT'])
-@protected_resource()
 def advertisement_element(request, pk):
     try:
         ad = Advertisement.objects.get(pk = pk)

@@ -21,7 +21,4 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('api/', include('api.urls')),
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/login/', auth_views.LoginView.as_view(template_name='registration/login.html')),
-    url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]
