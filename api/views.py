@@ -104,7 +104,7 @@ def advertisement_collection(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET'])
+@api_view(['GET', 'DELETE', 'PUT'])
 def advertisement_element(request, pk):
     try:
         ad = Advertisement.objects.get(pk = pk)
@@ -112,6 +112,15 @@ def advertisement_element(request, pk):
         return HttpResponse(status=404)
 
     print(request.method)
+    serializer = AdvertisementSerializer(ad)
     if request.method == 'GET':
-        serializer = AdvertisementSerializer(ad)
         return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = AdvertisementSerializer(ad, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+    elif request.method == 'DELETE':
+        ad.delete()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
