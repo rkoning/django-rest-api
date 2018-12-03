@@ -92,10 +92,10 @@ def campaign_collection(request):
             limit = 1
         offset = int(request.GET.get('offset', 0))
         campaigns = Campaign.objects.all()[offset:offset + limit]
-        # serializer = CampaignSerializer(campaigns, many = True)
-        # return Response(serializer.data)
-        response = serializers.serialize("json", campaigns)
-        return JsonResponse(response, content_type = "application/json")
+        serializer = CampaignSerializer(campaigns, many = True)
+        return Response(serializer.data)
+        # response = serializers.serialize("json", campaigns)
+        # return JsonResponse(response, content_type = "application/json")
     elif request.method == 'POST':
         serializer = CampaignSerializer(data = request.data)
         if serializer.is_valid():
