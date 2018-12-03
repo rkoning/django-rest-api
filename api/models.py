@@ -61,30 +61,15 @@ class Advertisement(models.Model):
         based on the contents of the request
         """
         limit = int(request.GET.get('limit', 10))
+        if limit > 100:
+            limit = 100
+        elif limit < 1:
+            limit = 1
         offset = int(request.GET.get('offset', 0))
         start = request.GET.get('start_date','1000-1-1')
         end = request.GET.get('end_date', now())
         order_by = request.GET.get('order_by', 'clicks')
         order = request.GET.get('order', 'asc')
         order = '-' if order == 'desc' else ''
-        ads = ad_set.filter(date__range=[start, end]).order_by("%s%s" % ( order, order_by ) )[offset:limit]
-        return ads
-
-
-    def handle_summary_params(request, ad_set):
-        limit = int(request.GET.get('limit', 10))
-        offset = int(request.GET.get('offset', 0))
-        start = request.GET.get('start_date','1000-1-1')
-        end = request.GET.get('end_date', now())
-        order_by = request.GET.get('order_by', 'clicks')
-        order = request.GET.get('order', 'asc')
-        order = '-' if order == 'desc' else ''
-        x = request.GET.get('x', 'date')
-        y = request.GET.get('y', 'clicks')
-        method = request.GET.get('method', 'Sum')
-        ads = ad_set.filter(date__range=[start, end]).order_by("%s%s" % ( order, order_by ) )
-        if method == 'Sum':
-            ads = list(ads.values(x).annotate(Sum(y)))
-        else:
-            ads = list(ads.values(x).annotate(Avg(y)))
+        ads = ad_set.filter(date__range=[start, end]).order_by("%s%s" % ( order, order_by ) )[offset:offset + limit]
         return ads
